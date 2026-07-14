@@ -1,0 +1,58 @@
+:root{--scroll-velocity:0;--scroll-progress:0}
+
+@media(pointer:fine) and (prefers-reduced-motion:no-preference){
+  html.has-custom-cursor,html.has-custom-cursor *{cursor:none!important}
+  html.has-custom-cursor input,html.has-custom-cursor textarea,html.has-custom-cursor select{cursor:auto!important}
+}
+
+.sauce-cursor{filter:blur(.1px);opacity:1;mix-blend-mode:normal}
+.hero-noise{transform:translate3d(0,calc(var(--scroll-velocity) * 9px),0);transition:transform .18s linear}
+
+.fx-magnetic,.fx-heading,.fx-media{will-change:transform}
+.fx-heading{position:relative;transition:filter .45s var(--ease),color .45s var(--ease)}
+.fx-heading::after{content:"";position:absolute;left:0;bottom:-.08em;width:min(88px,24%);height:max(3px,.035em);background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .55s var(--ease);pointer-events:none}
+.fx-heading:is(:hover,.is-hovered)::after{transform:scaleX(1);transform-origin:left}
+.fx-heading:is(:hover,.is-hovered){filter:drop-shadow(.045em .045em 0 color-mix(in srgb,var(--red) 80%,transparent))}
+.hero .fx-heading:is(:hover,.is-hovered){filter:drop-shadow(.045em .045em 0 color-mix(in srgb,var(--accent) 75%,transparent))}
+
+.fx-copy{transition:transform .5s var(--ease),color .4s var(--ease),opacity .4s var(--ease)}
+.fx-copy:hover{transform:translateX(5px);color:color-mix(in srgb,currentColor 72%,var(--red))}
+
+.button{position:relative;overflow:hidden;background-image:linear-gradient(105deg,var(--red) 0 49%,transparent 50% 100%);background-size:220% 100%;background-position:100% 0;transition:background-position .62s var(--ease),color .35s,transform .35s var(--ease),box-shadow .35s}
+.button:hover{background-position:0 0;color:var(--ink);box-shadow:7px 7px 0 var(--ink)}
+.button--dark:hover{color:var(--ink);box-shadow:7px 7px 0 color-mix(in srgb,var(--cream) 72%,transparent)}
+
+.icon-button,.circle-button{position:relative;overflow:hidden;background-image:radial-gradient(circle at center,var(--red) 0 48%,transparent 50%);background-repeat:no-repeat;background-position:center;background-size:0 0;transition:color .35s,background-size .55s var(--ease),box-shadow .35s,transform .35s var(--ease)}
+.icon-button::before,.circle-button::before{content:none}
+.icon-button:hover,.circle-button:hover{background-size:240% 240%}
+.icon-button:hover,.circle-button:hover{color:var(--ink);box-shadow:0 0 0 2px var(--red),0 10px 28px rgba(233,81,45,.25)}
+
+.text-link{position:relative;overflow:hidden;background-image:linear-gradient(var(--red),var(--red));background-repeat:no-repeat;background-size:0 100%;background-position:0 100%;transition:background-size .5s var(--ease),padding .4s var(--ease),color .35s}
+.text-link:hover{background-size:100% 100%;padding-inline:9px;color:var(--ink)}
+.desktop-nav a,.footer-links a{transition:color .35s,letter-spacing .45s var(--ease),filter .35s}
+.desktop-nav a:hover,.footer-links a:hover{color:var(--red);letter-spacing:.075em;filter:drop-shadow(0 8px 18px rgba(233,81,45,.28))}
+
+.fx-media{backface-visibility:hidden;transform-style:preserve-3d;transition:filter .5s var(--ease)}
+.fx-media-wrap{perspective:900px}
+.fx-media-wrap.is-hovered .fx-media{filter:saturate(1.18) contrast(1.07) drop-shadow(0 24px 22px rgba(0,0,0,.22))}
+.campaign-image,.story-image,.film-frame,.origin-sticky{transition:border-color .4s,box-shadow .55s var(--ease),transform .55s var(--ease)}
+.campaign-image:hover,.story-image:hover,.film-frame:hover,.origin-sticky:hover{border-color:var(--red);box-shadow:18px 22px 0 color-mix(in srgb,var(--red) 72%,transparent)}
+.campaign-image img,.story-image img,.film-frame img,.origin-sticky img{transition:filter .55s var(--ease)}
+.campaign-image:hover img,.story-image:hover img,.film-frame:hover img,.origin-sticky:hover img{filter:saturate(1.16) contrast(1.06)}
+
+.product-take,.shop-row,.review,.partner article,.benefit{transition:filter .5s var(--ease),box-shadow .5s var(--ease),transform .55s var(--ease)}
+.product-take:hover{filter:saturate(1.08)}
+.shop-row:hover{filter:saturate(1.08);box-shadow:inset 0 0 0 3px var(--product)}
+.review:hover{transform:translateY(-10px) rotate(-.7deg);box-shadow:10px 12px 0 var(--red)}
+.partner article:hover,.benefit:hover{filter:saturate(1.12);box-shadow:inset 0 0 0 5px rgba(247,239,223,.42)}
+.shop-row:hover .shop-row-copy h2,.product-take:hover .product-take-copy h3{color:color-mix(in srgb,currentColor 78%,var(--red))}
+
+.is-scrolling .site-header{box-shadow:0 12px 35px rgba(0,0,0,calc(var(--scroll-velocity) * .22))}
+
+@media(pointer:coarse),(prefers-reduced-motion:reduce){
+  .sauce-cursor{display:none!important}
+  .fx-heading,.fx-copy,.fx-media,.fx-magnetic{transform:none!important;filter:none!important}
+  .fx-heading::after{display:none}
+  .campaign-image:hover,.story-image:hover,.film-frame:hover,.origin-sticky:hover,
+  .review:hover{transform:none;box-shadow:none}
+}
