@@ -6,6 +6,7 @@
 }
 
 .sauce-cursor{filter:blur(.1px);opacity:1;mix-blend-mode:normal}
+.hero,.hero::before,.hero-copy h1 span,.hero-stage::before,.orbit--one{transition-duration:1.2s}
 .hero-noise{transform:translate3d(0,calc(var(--scroll-velocity) * 9px),0);transition:transform .18s linear}
 
 .fx-magnetic,.fx-heading,.fx-media{will-change:transform}

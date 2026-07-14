@@ -4,8 +4,60 @@ import { products, bundles } from '../data/products.js';
 export const initHome = async cart => {
   if(!document.querySelector('[data-home]'))return;
   let index=0,busy=false;const hero=document.querySelector('.hero');const stage=hero.querySelector('[data-hero-stage]');const name=hero.querySelector('[data-hero-name]');const number=hero.querySelector('[data-hero-number]');const copy=hero.querySelector('[data-hero-copy]');
-  const update=direction=>{if(busy)return;busy=true;index=(index+direction+products.length)%products.length;const p=products[index];gsap.timeline({onComplete:()=>busy=false}).to([stage,name,copy],{opacity:0,y:direction*22,duration:.25}).call(()=>{stage.style.setProperty('--product',p.color);stage.querySelector('.bottle-art').setAttribute('aria-label',`Bottle of ${p.name}`);stage.querySelector('.bottle-label small').textContent=p.name;stage.querySelector('.bottle-label em').textContent=p.glyph;stage.querySelector('.orbit--one').textContent=p.glyph;name.textContent=p.name;copy.textContent=p.description;number.textContent=String(index+1).padStart(2,'0');hero.style.setProperty('--accent',p.color);window.heroScene?.setColor(p.color);}).fromTo([stage,name,copy],{opacity:0,y:-direction*22},{opacity:1,y:0,duration:.55,stagger:.04,ease:'power3.out'});};
-  hero.querySelector('[data-hero-next]').addEventListener('click',()=>update(1));hero.querySelector('[data-hero-prev]').addEventListener('click',()=>update(-1));
+  const bottle=stage.querySelector('.bottle-art');const label=bottle.querySelector('.bottle-label');const orbitOne=stage.querySelector('.orbit--one');const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const applyProduct=product=>{
+    stage.style.setProperty('--product',product.color);
+    bottle.setAttribute('aria-label',`Bottle of ${product.name}`);
+    bottle.querySelector('.bottle-label small').textContent=product.name;
+    bottle.querySelector('.bottle-label em').textContent=product.glyph;
+    stage.querySelector('.orbit--one').textContent=product.glyph;
+    name.textContent=product.name;
+    copy.textContent=product.description;
+    number.textContent=String(index+1).padStart(2,'0');
+    hero.style.setProperty('--accent',product.color);
+    window.heroScene?.setColor(product.color);
+  };
+  const update=direction=>{
+    if(busy)return;
+    busy=true;
+    index=(index+direction+products.length)%products.length;
+    const product=products[index];
+    if(reduced){applyProduct(product);busy=false;return;}
+
+    const animated=[bottle,label,orbitOne,name,number,copy];
+    gsap.timeline({
+      defaults:{overwrite:'auto'},
+      onStart:()=>gsap.set(animated,{willChange:'transform, opacity'}),
+      onComplete:()=>{gsap.set(animated,{clearProps:'transform,opacity,willChange'});busy=false;}
+    })
+      .to(bottle,{scale:.985,duration:.62,ease:'sine.inOut'},0)
+      .to(label,{scale:.97,opacity:0,duration:.58,ease:'sine.inOut'},0)
+      .to(orbitOne,{scale:.9,opacity:0,duration:.52,ease:'sine.inOut'},0)
+      .to(name,{y:direction*7,opacity:0,duration:.5,ease:'sine.inOut'},0)
+      .to(copy,{y:direction*7,opacity:0,duration:.56,ease:'sine.inOut'},.04)
+      .to(number,{y:direction*6,opacity:0,duration:.46,ease:'sine.inOut'},.02)
+      .call(()=>applyProduct(product),[],.6)
+      .set(label,{scale:1.025,opacity:0},.6)
+      .set(orbitOne,{scale:.9,opacity:0},.6)
+      .set([name,copy],{y:-direction*7,opacity:0},.6)
+      .set(number,{y:-direction*6,opacity:0},.6)
+      .to(bottle,{scale:1,duration:1.1,ease:'sine.out'},.6)
+      .to(label,{scale:1,opacity:1,duration:1.08,ease:'power2.out'},.62)
+      .to(orbitOne,{scale:1,opacity:1,duration:1.02,ease:'power2.out'},.66)
+      .to(name,{y:0,opacity:1,duration:.96,ease:'power2.out'},.68)
+      .to(copy,{y:0,opacity:1,duration:1.02,ease:'power2.out'},.74)
+      .to(number,{y:0,opacity:1,duration:.9,ease:'power2.out'},.7);
+  };
+  let autoplayTimer;
+  const scheduleAutoplay=()=>{
+    clearTimeout(autoplayTimer);
+    if(document.hidden)return;
+    autoplayTimer=setTimeout(()=>{update(1);scheduleAutoplay();},4000);
+  };
+  const changeManually=direction=>{update(direction);scheduleAutoplay();};
+  hero.querySelector('[data-hero-next]').addEventListener('click',()=>changeManually(1));hero.querySelector('[data-hero-prev]').addEventListener('click',()=>changeManually(-1));
+  document.addEventListener('visibilitychange',scheduleAutoplay);
+  scheduleAutoplay();
   gsap.from('.hero-copy > *',{y:70,opacity:0,duration:1,stagger:.08,ease:'power4.out',delay:.2});gsap.from(stage,{scale:.8,rotation:-8,opacity:0,duration:1.2,ease:'back.out(1.4)',delay:.35});
   document.querySelectorAll('.product-take').forEach(card=>ScrollTrigger.create({trigger:card,start:'top 55%',end:'bottom 45%',toggleClass:'is-active'}));
   const film=document.querySelector('[data-film]');const filmButton=film.querySelector('.film-toggle');const filmCanvas=film.querySelector('canvas');const fctx=filmCanvas.getContext('2d');let filmPlaying=false,filmRaf,t=0;
